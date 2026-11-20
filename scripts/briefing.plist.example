@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Briefing automatico ogni mattina su Mac (launchd).
+  1. Sostituisci PERCORSO_PROGETTO con il percorso completo della cartella del progetto
+     e PERCORSO_CLAUDE con l'output di: command -v claude
+  2. Cambia ora e minuti in StartCalendarInterval (predefinito 07:45). Senza altri argomenti
+     fa il briefing di tutti i profili pronti; per alcuni soltanto, aggiungi i loro nomi in
+     ProgramArguments dopo lo script, una riga <string> per profilo.
+  3. Copia il file in ~/Library/LaunchAgents/it.agent-meta-ads.briefing.plist
+  4. Attivalo con: launchctl load ~/Library/LaunchAgents/it.agent-meta-ads.briefing.plist
+  Per disattivarlo: launchctl unload ~/Library/LaunchAgents/it.agent-meta-ads.briefing.plist
+  Il Mac deve essere acceso (o in stop) all'orario indicato.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>it.agent-meta-ads.briefing</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>PERCORSO_PROGETTO/scripts/briefing-programmato.sh</string>
+  </array>
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>CLAUDE_BIN</key>
+    <string>PERCORSO_CLAUDE</string>
+    <key>PATH</key>
+    <string>/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin</string>
+  </dict>
+  <key>StartCalendarInterval</key>
+  <dict>
+    <key>Hour</key>
+    <integer>7</integer>
+    <key>Minute</key>
+    <integer>45</integer>
+  </dict>
+  <key>StandardErrorPath</key>
+  <string>PERCORSO_PROGETTO/profili/briefing-launchd-errori.log</string>
+</dict>
+</plist>

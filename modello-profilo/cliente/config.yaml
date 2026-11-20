@@ -1,0 +1,151 @@
+# Configurazione del cliente: unica fonte di verità per obiettivi e soglie.
+# La compila /onboarding. Si può modificare a mano: l'agent la rilegge a ogni sessione.
+# I valori predefiniti sono regole pratiche da professionisti (fonti in THIRD_PARTY_LICENSES.md),
+# non dati ufficiali Meta: vanno tarati sul cliente dopo le prime settimane.
+
+onboarding_completato: false
+data_onboarding: ""
+onboarding_rapido: false       # true = fatto solo il percorso breve di /notorieta (account, Instagram, scheda, budget). Per le campagne di vendita serve l'onboarding completo
+
+# sola_lettura: l'agent legge e propone, non scrive nulla su Meta (bloccato anche da un hook)
+# gestione_con_conferma: l'agent applica le modifiche una alla volta, solo dopo un sì esplicito
+fase: sola_lettura
+fine_sola_lettura: ""          # AAAA-MM-GG, consigliati 14 giorni dall'onboarding (con il percorso breve di /notorieta resta vuoto: il passaggio lo chiede il cliente)
+
+cliente:
+  nome: ""
+  settore: ""
+  sito: ""
+  cosa_vende: ""
+  paesi: []                    # es. ["IT"]
+  lingua_annunci: it
+  valuta: EUR                  # la conferma il connettore: è la valuta dell'account
+  fuso_orario: Europe/Rome
+  categoria_speciale: nessuna  # nessuna | lavoro | casa | servizi_finanziari | politica
+
+meta:
+  account_pubblicitari: []     # uno solo per profilo: - { id: "123", nome: "", ruolo: "principale" }
+  pagina_facebook_id: ""
+  instagram_id: ""
+  dataset_pixel_id: ""
+  campagna_test_id: ""         # dove l'agent mette le creatività nuove da testare
+  ad_set_test_id: ""
+  modalita_bozza: sconosciuta  # si | no | sconosciuta: lo rileva il connettore alla prima creazione
+  altri_gestori: ""            # agenzia o persone che lavorano sullo stesso account
+
+obiettivo:                     # regole comuni a tutti i prodotti
+  finestra_attribuzione: "7 giorni dal clic, 1 giorno dalla visualizzazione"
+
+# Una scheda per ogni prodotto o servizio pubblicizzato: ogni campagna si giudica con
+# l'obiettivo del suo prodotto. Regole: .claude/skills/briefing/references/prodotti.md
+prodotti:
+  - etichetta: ""              # breve, maiuscola, senza spazi; va all'inizio del nome delle campagne: "[CORSI] ..."
+    nome: ""
+    stato: attivo              # attivo (si pubblicizza ora) | futuro (se ne parlerà) | sospeso
+    tipo: vendita              # vendita (si giudica su CPA o ROAS) | notorieta (farsi conoscere: si giudica su video, copertura e follower)
+    risultato: ""              # vendita | contatto | telefonata | messaggio | prenotazione
+    evento_conversione: ""     # es. PURCHASE, LEAD, CALL
+    kpi: cpa                   # cpa | roas | costo_per_risultato (solo con tipo: notorieta)
+    valore_medio: null         # valore medio di un ordine o di un cliente
+    margine_pct: null          # quanto resta dopo i costi diretti; ROAS di pareggio = 100 / margine
+    passaggi_vendita: ""       # dal risultato alla vendita, es. "3 preventivi su 10 diventano ordini"
+    cpa_pareggio: null         # valore medio x margine x probabilità che un risultato diventi vendita
+    cpa_target: null           # sotto il pareggio, confermato dal cliente
+    roas_target: null          # solo se kpi: roas
+    budget_mensile: null       # facoltativo: quota del budget dell'account
+    pubblico: ""
+    pubblico_dimensione: ""    # ampio (si rinnova di continuo) | ristretto (locale, nicchia, alto valore: frequenze alte sono normali)
+    fatica: {}                 # facoltativo: soglie di fatica solo per questo prodotto. Si compilano con la taratura
+    perche_noi: ""
+    zona: ""
+    stagionalita: ""
+    pagina_destinazione: ""
+    notorieta:                 # solo con tipo: notorieta. Regole: .claude/skills/notorieta/references/giudizio.md
+      risultato: ""            # follower | visualizzazione_completa | persona_raggiunta | visita_profilo
+      solo_instagram: true
+      posizioni_instagram: []  # vuoto = tutte le posizioni di Instagram; altrimenti es. ["reels", "stream", "story"]
+      zona_cerchio: null       # solo per una zona locale, es. { latitudine: 41.9028, longitudine: 12.4964, raggio_km: 40 }. Vuoto = tutto il paese
+      costo_riferimento: null  # costo per risultato misurato sull'account nel periodo di misura: lo calcola l'agent, non si inventa
+      costo_target: null       # obiettivo confermato dal cliente dopo la misura
+      misurato_il: ""          # AAAA-MM-GG dell'ultima misura
+      campagna_bacino_id: ""   # dove si aggiungono i contenuti nuovi
+      ad_set_bacino_id: ""
+      pubblici_esclusi: []     # ID di pubblici personalizzati creati dal cliente in Gestione inserzioni
+    campagne: []               # ID delle campagne di questo prodotto il cui nome non ha l'etichetta
+    da_confermare: []          # campi stimati dall'agent, non ancora confermati dal cliente
+    aggiornato_il: ""          # AAAA-MM-GG dell'ultima conferma del cliente
+
+budget:
+  giornaliero_totale: null
+  massimo_mensile: null
+  aumento_max_per_passo_pct: 20     # mai più di così in una sola modifica
+  doppia_conferma_oltre_pct: 50
+  quota_test_pct: 20                # parte del budget per le creatività in test
+  modifiche_max_per_conferma: 5
+
+regole:
+  giorni_learning_non_toccare: 7
+  giorni_attesa_dopo_modifica: 7    # un gruppo di inserzioni modificato non si ritocca prima
+  scheda_prodotto_valida_giorni: 90 # dopo, prima di una nuova campagna si riconfermano prezzi, margini, offerta e stagione
+  escludi_ultime_ore: 72            # per giudicare vincenti e perdenti
+  campione_minimo:
+    clic: 100
+    giorni: 7
+    impression: 1000
+    conversioni_per_lettura_fine: 30   # sotto, si leggono solo differenze di circa 2 volte
+  fatica:                           # stanca = CTR giù + costo su + frequenza su, tutti insieme (lettura-dati.md)
+    calo_ctr_pct: 20                # rispetto al periodo precedente di pari durata
+    aumento_costo_risultato_pct: 20 # stesso confronto; con poche conversioni si usa il CPC
+    crescita_frequenza_pct: 30      # la frequenza sale rispetto al periodo precedente dello stesso gruppo
+    frequenza_freddo_attenzione: 2.5      # sopra: solo "da guardare". Una scheda prodotto può sovrascriverla
+    frequenza_retargeting_attenzione: 8   # idem, per il retargeting
+  spegnere:
+    senza_conversioni_dopo_x_cpa: 2.5   # spesi 2,5 volte il CPA target senza conversioni
+    cpa_oltre_x_target: 1.75
+    dopo_spesa_x_cpa: 4
+  zona_grigia_x_target: [0.8, 1.3]  # tra questi multipli del target decide il cliente
+  scalare:
+    cpa_max_x_target: 0.9           # si propone di scalare solo se il CPA è sotto il 90% del target del prodotto
+    giorni_tra_aumenti: 5
+  consegna_giorno_7_min_quota: 0.5  # al giorno 7 un'inserzione deve aver speso almeno metà della sua quota
+  hook_rate_min_pct: 20             # % di chi guarda almeno 3 secondi di un video (si legge per gruppo: il dato non esiste per singola inserzione)
+  notorieta:                        # per le schede con tipo: notorieta. Valori provvisori di partenza, da tarare sui dati dell'account
+    giorni_misura: 14               # giorni di spesa in cui si misura senza giudicare i costi
+    reel_min_per_mediana: 5         # contenuti con campione sufficiente che servono per calcolare un riferimento
+    impression_min_per_reel: 3000   # sotto, un contenuto è "poco testato"
+    giorni_min_per_reel: 4
+    tenuta_sotto_mediana_x: 0.7     # aggancio e tenuta sotto il 70% della mediana: il contenuto non regge
+    costo_sopra_mediana_x: 1.5      # costo per risultato oltre 1,5 volte il riferimento: caro
+    scalare_costo_sotto_mediana_x: 0.8
+    thruplay_min_pct: 15            # % delle riproduzioni viste per 15 secondi o fino alla fine. Solo indicativa: la fonte non dice su quale base la calcola
+    reel_attivi_min: 3              # sotto, non si spegne un contenuto senza averne attivato uno nuovo
+    reel_attivi_max: 6
+    nuovi_reel_a_settimana: 2
+  taratura:                         # la revisione settimanale ricalcola le soglie sui dati dell'account
+    dopo_giorni: 28
+    ripeti_ogni_giorni: 90
+    ultima: ""                      # AAAA-MM-GG dell'ultima taratura approvata dal cliente
+
+non_toccare: []                     # ID di campagne o gruppi di inserzioni da non modificare mai
+
+blocco_lanci: false                 # true durante una crisi: nessuna nuova creatività o campagna
+
+creativita:
+  generatore_immagini: nessuno      # nessuno | magnific | openai | gemini | canva | altro
+  generatore_note: ""
+  chiedere_preventivo: true
+  caricamento_media: manuale        # manuale | sito_cliente | supabase (vedi README)
+  url_base_media: ""                # se i file vengono messi su un sito o un bucket pubblico
+  dichiarazione_ai: chiedi          # chiedi | sempre | mai
+  formati: ["9:16", "4:5", "1:1"]
+  materiale_grezzo: "<profilo>/cliente/materiale/"   # video e foto originali da cui partire
+  chi_gira_video: ""
+  concept_in_test_min: 2
+
+competitor: []                      # nomi o pagine dei concorrenti da monitorare
+
+operativita:
+  orario_briefing: "08:00"
+  briefing_programmato: false
+  giorno_revisione: lunedi
+  chi_approva: ""

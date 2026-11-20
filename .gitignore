@@ -1,0 +1,10 @@
+.env
+.claude/settings.local.json
+.DS_Store
+
+# Dati degli account: restano sul computer di chi usa l'agent
+profili/*
+!profili/.gitkeep
+
+# Profilo scelto da ogni sessione
+.stato/

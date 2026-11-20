@@ -1,0 +1,3 @@
+# Connettore ufficiale Meta Ads per Codex (lo stesso di .mcp.json per Claude Code)
+[mcp_servers.meta-ads]
+url = "https://mcp.facebook.com/ads"

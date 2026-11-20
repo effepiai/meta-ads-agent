@@ -1,0 +1,22 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear",
+        "hooks": [{ "type": "command", "command": "./.claude/hooks/stato-progetto.sh" }]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "mcp__.*__ads_.*",
+        "hooks": [{ "type": "command", "command": "./.claude/hooks/guardia-scritture.sh" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "mcp__.*__ads_.*",
+        "hooks": [{ "type": "command", "command": "./.claude/hooks/registra-scritture.sh" }]
+      }
+    ]
+  }
+}
