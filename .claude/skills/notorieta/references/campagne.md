@@ -2,8 +2,6 @@
 
 Verificato sugli schemi del connettore ufficiale il 2026-11-19. **La descrizione del tool nel connettore resta la fonte di verità**: se qualcosa qui non torna, vale lo schema live. Le regole generali (centesimi, stringhe JSON, modalità bozza) sono in `.claude/skills/pubblica/references/contratti-tool.md`.
 
-**Cosa è stato provato davvero.** La strada delle visite al profilo (terza riga della tabella, bacino con tre reel, zona a cerchio, account in modalità bozza) è stata creata e pubblicata su un account reale il 2026-11-20: dove una regola qui sotto dice "provato", viene da lì. Le altre combinazioni sono verificate solo sugli schemi.
-
 **Quello che scopri sull'account del cliente non va scritto in questo file**, che è uguale per tutti i profili: va in `<profilo>/registro/lezioni.md`, con la data. In questo file entrano solo regole del connettore valide per chiunque, senza nomi, ID, luoghi o numeri di un account.
 
 ## I nomi di Gestione inserzioni
@@ -20,7 +18,7 @@ Il cliente ragiona con i nomi che vede in Gestione inserzioni; questa skill parl
 - **La copertura non è più un obiettivo a sé**: oggi sta dentro Notorietà, come obiettivo di rendimento. Se il cliente cerca "Copertura" tra gli obiettivi e non la trova, spiegaglielo.
 - **Interazioni** copre due cose diverse: le visualizzazioni del video (quella che serve a un bacino di reel) e le interazioni con il post (like, commenti). Chiedi quale intende.
 - Nel piano scrivi sempre **tutti e due i nomi**: quello di Gestione inserzioni e il risultato, per esempio "Traffico verso il profilo Instagram (visite al profilo)". Così il cliente ritrova la campagna quando apre Gestione inserzioni.
-- Rileggendo una campagna Traffico, il campo dell'obiettivo può tornare come `LINK_CLICKS`: è il nome vecchio di Traffico, non un errore (provato).
+- Rileggendo una campagna Traffico, il campo dell'obiettivo può tornare come `LINK_CLICKS`: è il nome vecchio di Traffico, non un errore.
 
 ## Obiettivo e ottimizzazione, secondo il risultato principale
 
@@ -28,7 +26,7 @@ Il cliente ragiona con i nomi che vede in Gestione inserzioni; questa skill parl
 |---|---|---|---|---|
 | `visualizzazione_completa` | `OUTCOME_ENGAGEMENT` | `ON_VIDEO` | `THRUPLAY` | Meta cerca chi guarda i video. È la scelta predefinita di un bacino di reel. La destinazione è obbligatoria: senza, l'ottimizzazione viene rifiutata. Lo schema cita questa coppia insieme a un `promoted_object`: se la creazione lo chiede, è `{"page_id":"<pagina>"}` (**da verificare**) |
 | `persona_raggiunta` | `OUTCOME_AWARENESS` | nessuna | `REACH` | Meta cerca le persone più economiche da raggiungere, non quelle che guardano: va detto al cliente. Sotto questo obiettivo è valida anche `THRUPLAY`, senza destinazione: è il ripiego se la riga sopra viene rifiutata |
-| `visita_profilo` e `follower` | `OUTCOME_TRAFFIC` | `INSTAGRAM_PROFILE` | `VISIT_INSTAGRAM_PROFILE` | Non serve un `promoted_object` (provato: gruppo accettato senza, nessun errore di validazione) |
+| `visita_profilo` e `follower` | `OUTCOME_TRAFFIC` | `INSTAGRAM_PROFILE` | `VISIT_INSTAGRAM_PROFILE` | Non serve un `promoted_object` |
 
 - **Non esiste un'ottimizzazione per follower.** Per i follower si ottimizza per le visite al profilo e si misura `instagram_profile_follow_v2`. Che questa strada porti follower a un costo migliore del bacino di visualizzazioni è un'**ipotesi da verificare sull'account**, confrontando il costo per follower delle due campagne.
 - `optimization_goal` si sceglie solo tra i `valid_optimization_goals` restituiti da `ads_create_campaign`. Se la combinazione della tabella non è tra quelli, usa quella raccomandata dalla risposta e dillo al cliente.
@@ -56,14 +54,14 @@ Chi lavora in una città o in una provincia non vuole tutto il paese. Al posto d
 {"geo_locations":{"custom_locations":[{"latitude":41.9028,"longitude":12.4964,"radius":40,"distance_unit":"kilometer"}]},"publisher_platforms":["instagram"]}
 ```
 
-(Nell'esempio il centro di Roma con 40 km: sono valori di esempio, da sostituire.) Formato provato sul connettore. Regole:
+(Nell'esempio il centro di Roma con 40 km: sono valori di esempio, da sostituire.) Regole:
 
 - **Centro e raggio li dice il cliente.** Chiedi la città o l'indirizzo e fin dove vuole arrivare; proponi tu le coordinate e falle confermare nominando due o tre località che il cerchio comprende e una che resta fuori. Non dedurre la zona dalla sede dell'azienda.
 - **Un cerchio non segue i confini.** Vicino a un confine può comprendere un pezzo di un altro stato o di un'altra regione, e altra lingua: dillo al cliente prima del sì e, se non lo vuole, riduci il raggio o sposta il centro.
 - **Scrivi la zona nella scheda**: a parole in `zona` e con i numeri in `notorieta.zona_cerchio`. Sono i valori con cui si controlla, a ogni rilettura, che il gruppo esca dove deve.
 - **Il pubblico è ristretto.** Metti `pubblico_dimensione: ristretto` nella scheda e spiegalo al cliente: in una zona piccola le stesse persone vedono i contenuti più volte, quindi una frequenza più alta è normale e da sola non è un problema. Il segnale da guardare sono le persone raggiunte che smettono di crescere (vedi `giudizio.md`, "La stanchezza di un bacino").
 - **Categoria speciale** (lavoro, casa, servizi finanziari): Meta impone un raggio minimo di 25 km.
-- Il connettore può aggiungere da solo `targeting_automation.advantage_audience: 1` (provato): significa che Meta può allargare il pubblico per età e interessi, non la zona. Dopo la creazione rileggi `targeting` e conferma al cliente centro, raggio e piattaforme come risultano.
+- Il connettore può aggiungere da solo `targeting_automation.advantage_audience: 1`: significa che Meta può allargare il pubblico per età e interessi, non la zona. Dopo la creazione rileggi `targeting` e conferma al cliente centro, raggio e piattaforme come risultano.
 
 ## Il pubblico
 
@@ -71,7 +69,7 @@ Chi lavora in una città o in una provincia non vuole tutto il paese. Al posto d
 - **Mai inventare ID di interessi.**
 - Un limite di età si mette solo se il cliente l'ha detto in questa conversazione.
 - **Esclusioni**: gli ID in `notorieta.pubblici_esclusi` vanno in `targeting.excluded_custom_audiences`, come oggetti con `id`. Restano un vincolo rigido anche con Advantage+ Audience. Prima controlla con `ads_get_ad_account_custom_audiences` che esistano ancora.
-- **Unione Europea: chi paga e chi beneficia.** `dsa_beneficiary` e `dsa_payor` sono obbligatori e compaiono accanto all'inserzione. Il connettore li compila con il nome del business dell'account. **Se l'account non appartiene a un business** (un account personale, senza Business Manager) non li compila nessuno: chiedi al cliente i due nomi nel piano, prima del sì, e passali a mano sul gruppo (provato). Di solito sono la stessa persona o azienda. Non inventarli e non ricavarli dal nome del profilo.
+- **Unione Europea: chi paga e chi beneficia.** `dsa_beneficiary` e `dsa_payor` sono obbligatori e compaiono accanto all'inserzione. Il connettore li compila con il nome del business dell'account. **Se l'account non appartiene a un business** (un account personale, senza Business Manager) non li compila nessuno: chiedi al cliente i due nomi nel piano, prima del sì, e passali a mano sul gruppo. Di solito sono la stessa persona o azienda. Non inventarli e non ricavarli dal nome del profilo.
 
 ## Tipo 1 — Spingi un reel (`ads_boost_ig_post`)
 
@@ -121,12 +119,12 @@ Una campagna, un gruppo, un'inserzione per contenuto. I contenuti nuovi si aggiu
    - `name`: `[ETICHETTA]_<data del post>_<titolo breve>`.
 
    **Nient'altro**: né testi, né immagini, né video, né titoli. Il post si usa così com'è. Un pulsante è facoltativo: `link_url` più `call_to_action_type`; senza link non c'è pulsante.
-5. **Un'inserzione per creatività**: `ads_create_ad` con `ad_set_id`, `ad_name` uguale al nome della creatività e `creative: {"creative_id":"<id>"}`. Rileggendo, i miglioramenti automatici di Meta risultano spenti (provato): il contenuto esce com'è.
+5. **Un'inserzione per creatività**: `ads_create_ad` con `ad_set_id`, `ad_name` uguale al nome della creatività e `creative: {"creative_id":"<id>"}`. Rileggendo, i miglioramenti automatici di Meta risultano spenti: il contenuto esce com'è.
 6. Rileggi tutto. **Anteprime**: `ads_get_ad_preview` restituisce link lunghi migliaia di caratteri, inutilizzabili in chat. Di' al cliente dove guardarle: in Gestione inserzioni, sulla campagna (nelle bozze, se l'account è in modalità bozza), aprendo l'inserzione. Incolla un link di anteprima solo se lo chiede.
 
 Attenzioni:
 - Si passa **il post originale**. Un ID preso da un'inserzione esistente, o da una copia già sponsorizzata, viene rifiutato.
-- **Dichiarazione dei contenuti fatti con l'AI** (`self_ai_disclosure`): si chiede **nel piano, per ogni contenuto**, non a metà creazione. La decide il cliente, vale per quel contenuto e **dopo la creazione non si cambia**. Senza la sua risposta le creatività non si creano. Con `creativita.dichiarazione_ai: sempre` o `mai` nel config si applica quella scelta, dicendolo nel piano. Sulla creatività dichiarata la scelta si rilegge in `generative_asset_spec` (provato).
+- **Dichiarazione dei contenuti fatti con l'AI** (`self_ai_disclosure`): si chiede **nel piano, per ogni contenuto**, non a metà creazione. La decide il cliente, vale per quel contenuto e **dopo la creazione non si cambia**. Senza la sua risposta le creatività non si creano. Con `creativita.dichiarazione_ai: sempre` o `mai` nel config si applica quella scelta, dicendolo nel piano. Sulla creatività dichiarata la scelta si rilegge in `generative_asset_spec`.
 - **Quanti contenuti**: da `reel_attivi_min` a `reel_attivi_max`. Troppi contenuti con poco budget restano tutti "poco testati". Al giorno 7 un contenuto che ha speso meno di `consegna_giorno_7_min_quota` della sua quota non sta ricevendo spesa.
 - **Budget piccoli** (pochi euro al giorno): parti dal minimo dei contenuti, `reel_attivi_min`. Ogni contenuto in più divide una spesa già piccola. Dillo nel piano, insieme al fatto che con poca spesa la misura può durare più di `giorni_misura`: finché i contenuti non arrivano a `impression_min_per_reel` non c'è un riferimento. Controlla anche `min_daily_budget_cents`: sotto quel valore la campagna non si crea.
 - **Quante scritture servono, e in quanti lotti.** Un bacino con N contenuti chiede 2 + 2 × N scritture: campagna, gruppo, N creatività, N inserzioni. Con tre contenuti sono 8, e `budget.modifiche_max_per_conferma` è 5 di serie. Il piano lo dice **prima**: "servono 8 creazioni, in due conferme: prima campagna, gruppo e le creatività, poi le inserzioni". Non fermarti a metà senza averlo annunciato.
@@ -148,10 +146,10 @@ Su alcuni account gli oggetti non nascono "in pausa" ma **in bozza**: le creazio
 - le bozze il cliente le vede in Gestione inserzioni, tra le bozze da rivedere e pubblicare.
 
 Come si lavora:
-- **Rilettura.** `ads_get_ad_entities` con `object_state: draft`. Con l'ID della campagna torna **solo la campagna**: gruppo e inserzioni si rileggono ognuno col suo ID (provato). Tieni gli ID da ogni risposta di creazione;
+- **Rilettura.** `ads_get_ad_entities` con `object_state: draft`. Con l'ID della campagna torna **solo la campagna**: gruppo e inserzioni si rileggono ognuno col suo ID. Tieni gli ID da ogni risposta di creazione;
 - dopo ogni creazione controlla `active_errors` e correggi gli errori bloccanti con `ads_update_entity` prima di pubblicare;
-- **Pubblicazione.** Una sola `ads_activate_entity` sulla campagna, con in `object_ids` **tutti** gli oggetti (campagna, gruppo, ogni inserzione) e `publish_as_active: true`. Risponde `PUBLISHING` (provato);
-- **Dopo.** Rileggi dal vivo, senza `object_state`: campagna `ACTIVE`, inserzioni `ACTIVE` con `effective_status: IN_PROCESS` finché Meta le elabora e le rivede (provato). Di' al cliente che la consegna parte dopo la revisione, di solito entro 24 ore, e metti nel registro un controllo per il giorno dopo;
+- **Pubblicazione.** Una sola `ads_activate_entity` sulla campagna, con in `object_ids` **tutti** gli oggetti (campagna, gruppo, ogni inserzione) e `publish_as_active: true`. Risponde `PUBLISHING`;
+- **Dopo.** Rileggi dal vivo, senza `object_state`: campagna `ACTIVE`, inserzioni `ACTIVE` con `effective_status: IN_PROCESS` finché Meta le elabora e le rivede. Di' al cliente che la consegna parte dopo la revisione, di solito entro 24 ore, e metti nel registro un controllo per il giorno dopo;
 - annota `meta.modalita_bozza: si` nel config.
 
 Non ancora verificato, e da scrivere come tale al cliente: se sull'inserzione compare il pulsante verso il profilo quando non si passa un `call_to_action_type`.
